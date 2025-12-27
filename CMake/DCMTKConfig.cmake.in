@@ -99,6 +99,17 @@ set(DCMTK_CMAKE_INSTALL_DATAROOTDIR @CMAKE_INSTALL_DATAROOTDIR@)
 
 set(DCMTK_CMAKE_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@")
 
+# Find required dependencies before importing targets
+# OpenJPEG is required if DCMTK was built with JPEG 2000 support
+if(DCMTK_WITH_OPENJPEG)
+  if(NOT TARGET openjp2)
+    find_package(OpenJPEG QUIET)
+    if(NOT OPENJPEG_FOUND AND NOT TARGET openjp2)
+      message(WARNING "DCMTK was built with OpenJPEG support but OpenJPEG was not found. "
+                      "You may need to set OpenJPEG_DIR to the location of OpenJPEGConfig.cmake")
+    endif()
+  endif()
+endif()
 
 SET_AND_CHECK(DCMTK_TARGETS "@PACKAGE_DCMTK_CMKDIR_CONFIG@/DCMTKTargets.cmake")
 
